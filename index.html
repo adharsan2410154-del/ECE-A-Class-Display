@@ -2,17 +2,115 @@
 <html lang="en">
 
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
     <title>ECE-A Class Display</title>
+
+    <link rel="stylesheet" href="styles.css">
+
 </head>
 
 <body>
 
-    <h1>ECE-A</h1>
+    <div class="class-display">
 
-    <h2>SSN COLLEGE OF ENGINEERING</h2>
+        <header class="header">
+
+            <div class="college-info">
+
+                <div class="college-title">
+                    SSN COLLEGE OF ENGINEERING
+                </div>
+
+                <div class="college-subtitle">
+                    ELECTRONICS AND COMMUNICATION ENGINEERING
+                </div>
+
+            </div>
+
+
+            <div class="class-info">
+
+                <div class="class-name">
+                    ECE - A
+                </div>
+
+                <div class="class-title">
+                    CLASS PERIOD DISPLAY
+                </div>
+
+            </div>
+
+
+            <div class="clock-area">
+
+                <div id="clock">
+                    00:00:00
+                </div>
+
+                <div id="date">
+                    Loading...
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <div class="table-header">
+
+            <div>PERIOD NO.</div>
+
+            <div>TIME</div>
+
+            <div>SUBJECT</div>
+
+            <div>STATUS</div>
+
+        </div>
+
+
+        <main class="period-window">
+
+            <div id="period-list">
+
+                <!-- Periods will be added later -->
+
+            </div>
+
+        </main>
+
+
+        <footer class="footer">
+
+            <div class="live">
+
+                <span class="live-dot"></span>
+
+                LIVE
+
+            </div>
+
+            <div class="message">
+
+                PLEASE CHECK THE DISPLAY FOR
+                CLASS UPDATES
+
+            </div>
+
+            <div class="section-name">
+
+                ECE-A
+
+            </div>
+
+        </footer>
+
+    </div>
 
 </body>
 
