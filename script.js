@@ -1,66 +1,37 @@
 /* =========================================
-   ECE-A CLASS TIMETABLE
+   ECE-A CLASS DISPLAY
+   FIREBASE LIVE DATABASE
 ========================================= */
 
-const periods = [
 
-    {
-        number: 1,
-        start: "09:00",
-        end: "10:00",
-        subject: "DIGITAL SIGNAL PROCESSING"
-    },
+/* =========================================
+   FIREBASE CONFIG
+========================================= */
 
-    {
-        number: 2,
-        start: "10:00",
-        end: "11:00",
-        subject: "DIGITAL SYSTEM DESIGN"
-    },
+const firebaseConfig = {
 
-    {
-        number: 3,
-        start: "11:15",
-        end: "12:15",
-        subject: "MICROPROCESSOR"
-    },
+    apiKey: "AIzaSyB9yO0eYwJm-lwFC5-TzFxqYtSdIxshpQ6-c",
 
-    {
-        number: 4,
-        start: "12:15",
-        end: "13:15",
-        subject: "ANALOG COMMUNICATION"
-    },
+    authDomain: "ece-a-class-display.firebaseapp.com",
 
-    {
-        number: 5,
-        start: "14:00",
-        end: "15:00",
-        subject: "LINEAR INTEGRATED CIRCUITS"
-    },
+    projectId: "ece-a-class-display",
 
-    {
-        number: 6,
-        start: "15:00",
-        end: "16:00",
-        subject: "DATA STRUCTURES"
-    },
+    storageBucket: "ece-a-class-display.firebasestorage.app",
 
-    {
-        number: 7,
-        start: "16:00",
-        end: "17:00",
-        subject: "MICROCONTROLLER"
-    },
+    messagingSenderId: "602913171442",
 
-    {
-        number: 8,
-        start: "17:00",
-        end: "18:00",
-        subject: "LAB / TUTORIAL"
-    }
+    appId: "1:602913171442:web:740f9ecd4bf298e866ad6b"
 
-];
+};
+
+
+/* =========================================
+   INITIALIZE FIREBASE
+========================================= */
+
+firebase.initializeApp(firebaseConfig);
+
+const db = firebase.firestore();
 
 
 /* =========================================
@@ -76,12 +47,18 @@ function updateClock() {
             hour12: false
         });
 
+
     document.getElementById("date").textContent =
         now.toLocaleDateString("en-IN", {
+
             weekday: "long",
+
             day: "2-digit",
+
             month: "long",
+
             year: "numeric"
+
         });
 
 }
@@ -93,42 +70,104 @@ setInterval(updateClock, 1000);
 
 
 /* =========================================
-   CONVERT HH:MM TO MINUTES
+   CONVERT TIME
 ========================================= */
 
-function timeToMinutes(time) {
+function timeToMinutes(timeString) {
 
-    const parts = time.split(":");
+    let text = timeString
+        .toUpperCase()
+        .trim();
 
-    return (
-        Number(parts[0]) * 60 +
-        Number(parts[1])
+
+    let match = text.match(
+        /(\d{1,2}):(\d{2})\s*(AM|PM)?/
     );
+
+
+    if (!match) {
+
+        return 0;
+
+    }
+
+
+    let hours = Number(match[1]);
+
+    let minutes = Number(match[2]);
+
+    let period = match[3];
+
+
+    if (period === "PM" && hours !== 12) {
+
+        hours += 12;
+
+    }
+
+
+    if (period === "AM" && hours === 12) {
+
+        hours = 0;
+
+    }
+
+
+    return hours * 60 + minutes;
 
 }
 
 
 /* =========================================
-   GET CURRENT STATUS
+   GET START / END TIME
 ========================================= */
 
-function getStatus(period) {
+function getTimeParts(timeText) {
+
+    const parts =
+        timeText.split("-");
+
+
+    if (parts.length < 2) {
+
+        return {
+            start: 0,
+            end: 0
+        };
+
+    }
+
+
+    return {
+
+        start: timeToMinutes(parts[0]),
+
+        end: timeToMinutes(parts[1])
+
+    };
+
+}
+
+
+/* =========================================
+   STATUS
+========================================= */
+
+function calculateStatus(timeText) {
 
     const now = new Date();
+
 
     const currentMinutes =
         now.getHours() * 60 +
         now.getMinutes();
 
 
-    const start =
-        timeToMinutes(period.start);
-
-    const end =
-        timeToMinutes(period.end);
+    const times =
+        getTimeParts(timeText);
 
 
-    if (currentMinutes < start) {
+    if (currentMinutes < times.start) {
 
         return "UPCOMING";
 
@@ -136,8 +175,8 @@ function getStatus(period) {
 
 
     if (
-        currentMinutes >= start &&
-        currentMinutes < end
+        currentMinutes >= times.start &&
+        currentMinutes < times.end
     ) {
 
         return "ONGOING";
@@ -151,25 +190,84 @@ function getStatus(period) {
 
 
 /* =========================================
+   STATUS CSS CLASS
+========================================= */
+
+function getStatusClass(status) {
+
+    switch (status) {
+
+        case "ONGOING":
+
+            return "status-ongoing";
+
+
+        case "COMPLETED":
+
+            return "status-completed";
+
+
+        case "CANCELLED":
+
+            return "status-cancelled";
+
+
+        default:
+
+            return "status-upcoming";
+
+    }
+
+}
+
+
+/* =========================================
    DISPLAY PERIODS
 ========================================= */
 
-function displayPeriods() {
+function displayPeriods(periods) {
 
     const list =
         document.getElementById("period-list");
+
 
     list.innerHTML = "";
 
 
     periods.forEach(function(period) {
 
-        const status =
-            getStatus(period);
+        let status;
+
+
+        /*
+         * If Firebase says CANCELLED,
+         * keep it cancelled.
+         *
+         * Otherwise calculate automatically.
+         */
+
+        if (
+            String(period.status || "")
+                .toUpperCase() === "CANCELLED"
+        ) {
+
+            status = "CANCELLED";
+
+        }
+
+        else {
+
+            status =
+                calculateStatus(
+                    period.time
+                );
+
+        }
 
 
         const row =
             document.createElement("div");
+
 
         row.className =
             "period-row";
@@ -186,47 +284,37 @@ function displayPeriods() {
         }
 
 
-        let statusClass = "";
-
-
-        if (status === "ONGOING") {
-
-            statusClass =
-                "status-ongoing";
-
-        }
-
-        else if (status === "UPCOMING") {
-
-            statusClass =
-                "status-upcoming";
-
-        }
-
-        else if (status === "COMPLETED") {
-
-            statusClass =
-                "status-completed";
-
-        }
+        const statusClass =
+            getStatusClass(status);
 
 
         row.innerHTML = `
 
             <div class="period-number">
-                ${period.number}
+
+                ${period.periodNo ?? ""}
+
             </div>
+
 
             <div class="period-time">
-                ${period.start} – ${period.end}
+
+                ${period.time ?? ""}
+
             </div>
+
 
             <div class="period-subject">
-                ${period.subject}
+
+                ${period.subject ?? ""}
+
             </div>
 
+
             <div class="period-status ${statusClass}">
+
                 ${status}
+
             </div>
 
         `;
@@ -240,20 +328,97 @@ function displayPeriods() {
 
 
 /* =========================================
-   INITIAL DISPLAY
+   FIREBASE REAL-TIME LISTENER
 ========================================= */
 
-displayPeriods();
+db.collection("periods")
+
+    .orderBy("periodNo")
+
+    .onSnapshot(
+
+        function(snapshot) {
+
+            const periods = [];
+
+
+            snapshot.forEach(function(doc) {
+
+                periods.push({
+
+                    id: doc.id,
+
+                    ...doc.data()
+
+                });
+
+            });
+
+
+            displayPeriods(periods);
+
+        },
+
+
+        function(error) {
+
+            console.error(
+                "Firebase error:",
+                error
+            );
+
+
+            document.getElementById(
+                "period-list"
+            ).innerHTML = `
+
+                <div style="
+                    text-align:center;
+                    padding:40px;
+                    color:#ff5555;
+                    font-size:22px;
+                ">
+
+                    DATABASE CONNECTION ERROR
+
+                </div>
+
+            `;
+
+        }
+
+    );
 
 
 /* =========================================
-   UPDATE STATUS EVERY MINUTE
+   REFRESH STATUS EVERY 30 SECONDS
 ========================================= */
 
-setInterval(
+setInterval(function() {
 
-    displayPeriods,
+    db.collection("periods")
+        .orderBy("periodNo")
+        .get()
+        .then(function(snapshot) {
 
-    30000
+            const periods = [];
 
-);
+
+            snapshot.forEach(function(doc) {
+
+                periods.push({
+
+                    id: doc.id,
+
+                    ...doc.data()
+
+                });
+
+            });
+
+
+            displayPeriods(periods);
+
+        });
+
+}, 30000);
