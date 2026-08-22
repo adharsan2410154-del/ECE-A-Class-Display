@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>ECE-A Admin</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #07111f;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: #ffd34e;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #aaa;
+            margin-bottom: 25px;
+        }
+
+        .card {
+            background: #0d1d31;
+            border: 1px solid #29496b;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+            margin-bottom: 6px;
+            font-weight: bold;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 13px;
+            background: #06101c;
+            color: white;
+            border: 1px solid #526b84;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            margin-top: 20px;
+            border: none;
+            border-radius: 7px;
+            background: #1261b0;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #1976d2;
+        }
+
+        .logout {
+            background: #9b1c1c;
+        }
+
+        .logout:hover {
+            background: #c62828;
+        }
+
+        .period-card {
+            background: #07111f;
+            border: 1px solid #304b68;
+            border-radius: 9px;
+            padding: 18px;
+            margin-top: 15px;
+        }
+
+        .period-title {
+            color: #ffd34e;
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        #loginSection,
+        #adminSection {
+            display: none;
+        }
+
+        .status-message {
+            text-align: center;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="container">
+
+
+    <!-- =========================
+         LOGIN
+    ========================== -->
+
+    <div id="loginSection">
+
+        <div class="card">
+
+            <h1>🔐 ECE-A ADMIN</h1>
+
+            <div class="subtitle">
+                SSN COLLEGE OF ENGINEERING
+            </div>
+
+
+            <label>Email</label>
+
+            <input
+                id="email"
+                type="email"
+                placeholder="Admin email"
+            >
+
+
+            <label>Password</label>
+
+            <input
+                id="password"
+                type="password"
+                placeholder="Password"
+            >
+
+
+            <button onclick="login()">
+                LOGIN
+            </button>
+
+
+            <div
+                id="loginMessage"
+                class="status-message">
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =========================
+         ADMIN PANEL
+    ========================== -->
+
+    <div id="adminSection">
+
+        <h1>ECE-A ADMIN</h1>
+
+        <div class="subtitle">
+            SSN COLLEGE OF ENGINEERING
+        </div>
+
+
+        <div class="card">
+
+            <button
+                class="logout"
+                onclick="logout()">
+
+                LOGOUT
+
+            </button>
+
+        </div>
+
+
+        <div class="card">
+
+            <h2>📚 Class Periods</h2>
+
+            <div id="periodList">
+
+                Loading periods...
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+</div>
+
+
+
+<!-- =========================
+     FIREBASE
+========================= -->
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+
+
+<script>
+
+
+/* =========================================
+   FIREBASE CONFIG
+========================================= */
+
+const firebaseConfig = {
+
+    apiKey: "AIzaSyB9yO0eYwJm-lwFC5-TzFxqYtSdIxshpQ6-c",
+
+    authDomain:
+        "ece-a-class-display.firebaseapp.com",
+
+    projectId:
+        "ece-a-class-display",
+
+    storageBucket:
+        "ece-a-class-display.firebasestorage.app",
+
+    messagingSenderId:
+        "602913171442",
+
+    appId:
+        "1:602913171442:web:740f9ecd4bf298e866ad6b"
+
+};
+
+
+/* =========================================
+   INITIALIZE FIREBASE
+========================================= */
+
+firebase.initializeApp(firebaseConfig);
+
+const auth = firebase.auth();
+
+const db = firebase.firestore();
+
+
+
+/* =========================================
+   LOGIN STATE
+========================================= */
+
+auth.onAuthStateChanged(function(user) {
+
+    if (user) {
+
+        document.getElementById(
+            "loginSection"
+        ).style.display = "none";
+
+
+        document.getElementById(
+            "adminSection"
+        ).style.display = "block";
+
+
+        loadPeriods();
+
+    }
+
+    else {
+
+        document.getElementById(
+            "loginSection"
+        ).style.display = "block";
+
+
+        document.getElementById(
+            "adminSection"
+        ).style.display = "none";
+
+    }
+
+});
+
+
+
+/* =========================================
+   LOGIN
+========================================= */
+
+function login() {
+
+    const email =
+        document.getElementById(
+            "email"
+        ).value.trim();
+
+
+    const password =
+        document.getElementById(
+            "password"
+        ).value;
+
+
+    if (!email || !password) {
+
+        document.getElementById(
+            "loginMessage"
+        ).textContent =
+            "Enter email and password.";
+
+        return;
+
+    }
+
+
+    auth.signInWithEmailAndPassword(
+        email,
+        password
+    )
+
+    .then(function() {
+
+        document.getElementById(
+            "loginMessage"
+        ).textContent = "";
+
+    })
+
+    .catch(function(error) {
+
+        document.getElementById(
+            "loginMessage"
+        ).textContent =
+            "Login failed.";
+
+        console.error(error);
+
+    });
+
+}
+
+
+
+/* =========================================
+   LOGOUT
+========================================= */
+
+function logout() {
+
+    auth.signOut();
+
+}
+
+
+
+/* =========================================
+   LOAD PERIODS
+========================================= */
+
+function loadPeriods() {
+
+    db.collection("periods")
+        .orderBy("periodNo")
+        .onSnapshot(function(snapshot) {
+
+            const list =
+                document.getElementById(
+                    "periodList"
+                );
+
+
+            list.innerHTML = "";
+
+
+            snapshot.forEach(function(doc) {
+
+                const period =
+                    doc.data();
+
+
+                const card =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                card.className =
+                    "period-card";
+
+
+                card.innerHTML = `
+
+                    <div class="period-title">
+
+                        PERIOD ${period.periodNo}
+
+                    </div>
+
+
+                    <label>
+                        Time
+                    </label>
+
+                    <input
+                        id="time-${doc.id}"
+                        value="${period.time || ""}"
+                    >
+
+
+                    <label>
+                        Subject
+                    </label>
+
+                    <input
+                        id="subject-${doc.id}"
+                        value="${period.subject || ""}"
+                    >
+
+
+                    <label>
+                        Status
+                    </label>
+
+                    <select
+                        id="status-${doc.id}"
+                    >
+
+                        <option value="upcoming"
+                            ${period.status === "upcoming" ? "selected" : ""}>
+                            UPCOMING
+                        </option>
+
+                        <option value="ongoing"
+                            ${period.status === "ongoing" ? "selected" : ""}>
+                            ONGOING
+                        </option>
+
+                        <option value="completed"
+                            ${period.status === "completed" ? "selected" : ""}>
+                            COMPLETED
+                        </option>
+
+                        <option value="cancelled"
+                            ${period.status === "cancelled" ? "selected" : ""}>
+                            CANCELLED
+                        </option>
+
+                    </select>
+
+
+                    <button
+                        onclick="savePeriod('${doc.id}')"
+                    >
+
+                        SAVE PERIOD
+
+                    </button>
+
+
+                    <div
+                        id="message-${doc.id}"
+                        class="status-message"
+                    ></div>
+
+                `;
+
+
+                list.appendChild(card);
+
+            });
+
+        });
+
+}
+
+
+
+/* =========================================
+   SAVE PERIOD
+========================================= */
+
+function savePeriod(id) {
+
+    const time =
+        document.getElementById(
+            "time-" + id
+        ).value.trim();
+
+
+    const subject =
+        document.getElementById(
+            "subject-" + id
+        ).value.trim();
+
+
+    const status =
+        document.getElementById(
+            "status-" + id
+        ).value;
+
+
+    db.collection("periods")
+        .doc(id)
+        .update({
+
+            time: time,
+
+            subject: subject,
+
+            status: status
+
+        })
+
+        .then(function() {
+
+            document.getElementById(
+                "message-" + id
+            ).textContent =
+                "✓ Saved successfully";
+
+
+        })
+
+        .catch(function(error) {
+
+            console.error(error);
+
+            document.getElementById(
+                "message-" + id
+            ).textContent =
+                "Save failed.";
+
+        });
+
+}
+
+
+</script>
+
+
+</body>
+
+</html>
