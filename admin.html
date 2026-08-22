@@ -8,7 +8,7 @@
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0">
 
-    <title>ECE-A Admin</title>
+    <title>ECE-A Admin Panel</title>
 
     <style>
 
@@ -18,40 +18,53 @@
 
         body {
             margin: 0;
-            padding: 20px;
-            background: #07111f;
+            min-height: 100vh;
+            background:
+                linear-gradient(135deg, #06101d, #0b1c31);
             color: white;
-            font-family: Arial, sans-serif;
+            font-family: Arial, Helvetica, sans-serif;
         }
 
         .container {
-            max-width: 800px;
+            width: 92%;
+            max-width: 900px;
             margin: auto;
+            padding: 30px 0 50px;
         }
 
-        h1 {
+        .header {
             text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            margin: 0;
             color: #ffd34e;
+            font-size: 38px;
         }
 
-        .subtitle {
-            text-align: center;
-            color: #aaa;
-            margin-bottom: 25px;
+        .header p {
+            color: #b8c5d3;
+            letter-spacing: 1px;
         }
 
         .card {
-            background: #0d1d31;
-            border: 1px solid #29496b;
-            border-radius: 12px;
-            padding: 20px;
+            background: rgba(13, 31, 51, 0.95);
+            border: 1px solid #315477;
+            border-radius: 14px;
+            padding: 24px;
             margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,.3);
+        }
+
+        .login-card {
+            max-width: 600px;
+            margin: 80px auto;
         }
 
         label {
             display: block;
-            margin-top: 15px;
-            margin-bottom: 6px;
+            margin: 15px 0 7px;
             font-weight: bold;
         }
 
@@ -59,20 +72,26 @@
         select {
             width: 100%;
             padding: 13px;
-            background: #06101c;
+            border-radius: 7px;
+            border: 1px solid #55718d;
+            background: #06101d;
             color: white;
-            border: 1px solid #526b84;
-            border-radius: 6px;
             font-size: 16px;
+            outline: none;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: #2d8cff;
         }
 
         button {
             width: 100%;
-            padding: 14px;
-            margin-top: 20px;
-            border: none;
+            padding: 13px;
+            margin-top: 18px;
+            border: 0;
             border-radius: 7px;
-            background: #1261b0;
+            background: #1769b5;
             color: white;
             font-size: 16px;
             font-weight: bold;
@@ -80,41 +99,103 @@
         }
 
         button:hover {
-            background: #1976d2;
+            background: #2183dc;
         }
 
         .logout {
-            background: #9b1c1c;
+            background: #9d2525;
         }
 
         .logout:hover {
-            background: #c62828;
+            background: #c83232;
+        }
+
+        .add {
+            background: #197642;
+        }
+
+        .add:hover {
+            background: #229b55;
+        }
+
+        .delete {
+            background: #7d2020;
+        }
+
+        .delete:hover {
+            background: #a52c2c;
         }
 
         .period-card {
-            background: #07111f;
-            border: 1px solid #304b68;
-            border-radius: 9px;
-            padding: 18px;
-            margin-top: 15px;
+            background: #081522;
+            border: 1px solid #365574;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 18px;
         }
 
         .period-title {
             color: #ffd34e;
-            font-size: 20px;
+            font-size: 23px;
             font-weight: bold;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
         }
 
-        #loginSection,
-        #adminSection {
-            display: none;
+        .save {
+            background: #146caa;
         }
 
-        .status-message {
+        .message {
             text-align: center;
-            margin-top: 15px;
+            margin-top: 12px;
             font-weight: bold;
+        }
+
+        .success {
+            color: #4dde71;
+        }
+
+        .error {
+            color: #ff6565;
+        }
+
+        .loading {
+            text-align: center;
+            color: #aaa;
+            padding: 30px;
+        }
+
+        .top-bar {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .top-bar button {
+            margin-top: 0;
+        }
+
+        .info {
+            color: #aebdcc;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        @media (max-width: 600px) {
+
+            .container {
+                width: 94%;
+                padding-top: 15px;
+            }
+
+            .header h1 {
+                font-size: 28px;
+            }
+
+            .card {
+                padding: 17px;
+            }
+
         }
 
     </style>
@@ -128,36 +209,46 @@
 <div class="container">
 
 
-    <!-- =========================
-         LOGIN
-    ========================== -->
+    <!-- =====================================
+         LOGIN SECTION
+    ====================================== -->
 
     <div id="loginSection">
 
-        <div class="card">
+        <div class="card login-card">
 
-            <h1>🔐 ECE-A ADMIN</h1>
+            <div class="header">
 
-            <div class="subtitle">
-                SSN COLLEGE OF ENGINEERING
+                <h1>🔐 ECE-A ADMIN</h1>
+
+                <p>
+                    SSN COLLEGE OF ENGINEERING
+                </p>
+
             </div>
 
 
-            <label>Email</label>
+            <label for="email">
+                Email
+            </label>
 
             <input
                 id="email"
                 type="email"
-                placeholder="Admin email"
+                placeholder="Enter admin email"
+                autocomplete="username"
             >
 
 
-            <label>Password</label>
+            <label for="password">
+                Password
+            </label>
 
             <input
                 id="password"
                 type="password"
-                placeholder="Password"
+                placeholder="Enter password"
+                autocomplete="current-password"
             >
 
 
@@ -168,7 +259,7 @@
 
             <div
                 id="loginMessage"
-                class="status-message">
+                class="message">
             </div>
 
         </div>
@@ -177,44 +268,73 @@
 
 
 
-    <!-- =========================
-         ADMIN PANEL
-    ========================== -->
+    <!-- =====================================
+         ADMIN SECTION
+    ====================================== -->
 
-    <div id="adminSection">
-
-        <h1>ECE-A ADMIN</h1>
-
-        <div class="subtitle">
-            SSN COLLEGE OF ENGINEERING
-        </div>
+    <div id="adminSection"
+         style="display:none;">
 
 
-        <div class="card">
+        <div class="header">
 
-            <button
-                class="logout"
-                onclick="logout()">
+            <h1>ECE-A ADMIN</h1>
 
-                LOGOUT
-
-            </button>
+            <p>
+                SSN COLLEGE OF ENGINEERING
+            </p>
 
         </div>
 
 
         <div class="card">
 
-            <h2>📚 Class Periods</h2>
+            <div class="top-bar">
 
-            <div id="periodList">
+                <button
+                    class="add"
+                    onclick="addPeriod()">
 
-                Loading periods...
+                    + ADD PERIOD
+
+                </button>
+
+
+                <button
+                    class="logout"
+                    onclick="logout()">
+
+                    LOGOUT
+
+                </button>
+
+            </div>
+
+
+            <div class="info">
+
+                Changes made here are saved directly
+                to Firebase and will appear on the
+                public display automatically.
 
             </div>
 
         </div>
 
+
+        <div class="card">
+
+            <h2>📚 CLASS PERIODS</h2>
+
+            <div id="periodList">
+
+                <div class="loading">
+                    Loading periods...
+                </div>
+
+            </div>
+
+        </div>
 
     </div>
 
@@ -222,9 +342,9 @@
 
 
 
-<!-- =========================
-     FIREBASE
-========================= -->
+<!-- =====================================
+     FIREBASE SDK
+====================================== -->
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 
@@ -236,14 +356,14 @@
 
 <script>
 
-
 /* =========================================
    FIREBASE CONFIG
 ========================================= */
 
 const firebaseConfig = {
 
-    apiKey: "AIzaSyB9yO0eYwJm-lwFC5-TzFxqYtSdIxshpQ6-c",
+    apiKey:
+        "AIzaSyB9yO0eYwJm-lwFC5-TzFxqYtSdIxshpQ6-c",
 
     authDomain:
         "ece-a-class-display.firebaseapp.com",
@@ -276,7 +396,7 @@ const db = firebase.firestore();
 
 
 /* =========================================
-   LOGIN STATE
+   AUTHENTICATION STATE
 ========================================= */
 
 auth.onAuthStateChanged(function(user) {
@@ -321,23 +441,37 @@ auth.onAuthStateChanged(function(user) {
 function login() {
 
     const email =
-        document.getElementById(
-            "email"
-        ).value.trim();
+        document.getElementById("email")
+        .value
+        .trim();
 
 
     const password =
+        document.getElementById("password")
+        .value;
+
+
+    const message =
         document.getElementById(
-            "password"
-        ).value;
+            "loginMessage"
+        );
+
+
+    message.className =
+        "message";
+
+
+    message.textContent =
+        "Signing in...";
 
 
     if (!email || !password) {
 
-        document.getElementById(
-            "loginMessage"
-        ).textContent =
-            "Enter email and password.";
+        message.className =
+            "message error";
+
+        message.textContent =
+            "Please enter email and password.";
 
         return;
 
@@ -351,20 +485,25 @@ function login() {
 
     .then(function() {
 
-        document.getElementById(
-            "loginMessage"
-        ).textContent = "";
+        message.textContent = "";
 
     })
 
     .catch(function(error) {
 
-        document.getElementById(
-            "loginMessage"
-        ).textContent =
-            "Login failed.";
+        console.error(
+            "Firebase Login Error:",
+            error
+        );
 
-        console.error(error);
+
+        message.className =
+            "message error";
+
+
+        message.textContent =
+            "Login failed: " +
+            error.code;
 
     });
 
@@ -390,117 +529,338 @@ function logout() {
 
 function loadPeriods() {
 
+    const list =
+        document.getElementById(
+            "periodList"
+        );
+
+
     db.collection("periods")
         .orderBy("periodNo")
-        .onSnapshot(function(snapshot) {
+        .onSnapshot(
 
-            const list =
-                document.getElementById(
-                    "periodList"
+            function(snapshot) {
+
+                list.innerHTML = "";
+
+
+                if (snapshot.empty) {
+
+                    list.innerHTML = `
+
+                        <div class="loading">
+
+                            No periods found.
+
+                        </div>
+
+                    `;
+
+                    return;
+
+                }
+
+
+                snapshot.forEach(function(doc) {
+
+                    createPeriodCard(
+                        doc.id,
+                        doc.data()
+                    );
+
+                });
+
+            },
+
+            function(error) {
+
+                console.error(
+                    "Firestore Error:",
+                    error
                 );
 
 
-            list.innerHTML = "";
+                list.innerHTML = `
 
+                    <div class="message error">
 
-            snapshot.forEach(function(doc) {
-
-                const period =
-                    doc.data();
-
-
-                const card =
-                    document.createElement(
-                        "div"
-                    );
-
-
-                card.className =
-                    "period-card";
-
-
-                card.innerHTML = `
-
-                    <div class="period-title">
-
-                        PERIOD ${period.periodNo}
+                        Database error:
+                        ${error.code}
 
                     </div>
 
-
-                    <label>
-                        Time
-                    </label>
-
-                    <input
-                        id="time-${doc.id}"
-                        value="${period.time || ""}"
-                    >
-
-
-                    <label>
-                        Subject
-                    </label>
-
-                    <input
-                        id="subject-${doc.id}"
-                        value="${period.subject || ""}"
-                    >
-
-
-                    <label>
-                        Status
-                    </label>
-
-                    <select
-                        id="status-${doc.id}"
-                    >
-
-                        <option value="upcoming"
-                            ${period.status === "upcoming" ? "selected" : ""}>
-                            UPCOMING
-                        </option>
-
-                        <option value="ongoing"
-                            ${period.status === "ongoing" ? "selected" : ""}>
-                            ONGOING
-                        </option>
-
-                        <option value="completed"
-                            ${period.status === "completed" ? "selected" : ""}>
-                            COMPLETED
-                        </option>
-
-                        <option value="cancelled"
-                            ${period.status === "cancelled" ? "selected" : ""}>
-                            CANCELLED
-                        </option>
-
-                    </select>
-
-
-                    <button
-                        onclick="savePeriod('${doc.id}')"
-                    >
-
-                        SAVE PERIOD
-
-                    </button>
-
-
-                    <div
-                        id="message-${doc.id}"
-                        class="status-message"
-                    ></div>
-
                 `;
 
+            }
 
-                list.appendChild(card);
+        );
 
-            });
+}
 
-        });
+
+
+/* =========================================
+   CREATE PERIOD CARD
+========================================= */
+
+function createPeriodCard(
+    id,
+    period
+) {
+
+    const list =
+        document.getElementById(
+            "periodList"
+        );
+
+
+    const card =
+        document.createElement(
+            "div"
+        );
+
+
+    card.className =
+        "period-card";
+
+
+    const title =
+        document.createElement(
+            "div"
+        );
+
+
+    title.className =
+        "period-title";
+
+
+    title.textContent =
+        "PERIOD " +
+        (period.periodNo ?? "");
+
+
+    card.appendChild(title);
+
+
+
+    /* TIME */
+
+    const timeLabel =
+        document.createElement(
+            "label"
+        );
+
+    timeLabel.textContent =
+        "Time";
+
+    card.appendChild(timeLabel);
+
+
+    const timeInput =
+        document.createElement(
+            "input"
+        );
+
+    timeInput.id =
+        "time-" + id;
+
+    timeInput.value =
+        period.time || "";
+
+    timeInput.placeholder =
+        "Example: 8:00-9:00 AM";
+
+    card.appendChild(timeInput);
+
+
+
+    /* SUBJECT */
+
+    const subjectLabel =
+        document.createElement(
+            "label"
+        );
+
+    subjectLabel.textContent =
+        "Subject";
+
+    card.appendChild(subjectLabel);
+
+
+    const subjectInput =
+        document.createElement(
+            "input"
+        );
+
+    subjectInput.id =
+        "subject-" + id;
+
+    subjectInput.value =
+        period.subject || "";
+
+    subjectInput.placeholder =
+        "Enter subject";
+
+    card.appendChild(subjectInput);
+
+
+
+    /* STATUS */
+
+    const statusLabel =
+        document.createElement(
+            "label"
+        );
+
+    statusLabel.textContent =
+        "Status";
+
+    card.appendChild(statusLabel);
+
+
+    const statusSelect =
+        document.createElement(
+            "select"
+        );
+
+    statusSelect.id =
+        "status-" + id;
+
+
+    const statuses = [
+
+        ["upcoming", "UPCOMING"],
+
+        ["ongoing", "ONGOING"],
+
+        ["completed", "COMPLETED"],
+
+        ["cancelled", "CANCELLED"]
+
+    ];
+
+
+    statuses.forEach(function(item) {
+
+        const option =
+            document.createElement(
+                "option"
+            );
+
+        option.value =
+            item[0];
+
+        option.textContent =
+            item[1];
+
+
+        if (
+            String(
+                period.status || ""
+            ).toLowerCase()
+            === item[0]
+        ) {
+
+            option.selected = true;
+
+        }
+
+
+        statusSelect.appendChild(
+            option
+        );
+
+    });
+
+
+    card.appendChild(
+        statusSelect
+    );
+
+
+
+    /* SAVE */
+
+    const saveButton =
+        document.createElement(
+            "button"
+        );
+
+
+    saveButton.className =
+        "save";
+
+
+    saveButton.textContent =
+        "💾 SAVE PERIOD";
+
+
+    saveButton.onclick =
+        function() {
+
+            savePeriod(id);
+
+        };
+
+
+    card.appendChild(
+        saveButton
+    );
+
+
+
+    /* DELETE */
+
+    const deleteButton =
+        document.createElement(
+            "button"
+        );
+
+
+    deleteButton.className =
+        "delete";
+
+
+    deleteButton.textContent =
+        "🗑 DELETE PERIOD";
+
+
+    deleteButton.onclick =
+        function() {
+
+            deletePeriod(id);
+
+        };
+
+
+    card.appendChild(
+        deleteButton
+    );
+
+
+
+    /* MESSAGE */
+
+    const message =
+        document.createElement(
+            "div"
+        );
+
+
+    message.id =
+        "message-" + id;
+
+
+    message.className =
+        "message";
+
+
+    card.appendChild(
+        message
+    );
+
+
+    list.appendChild(card);
 
 }
 
@@ -530,6 +890,25 @@ function savePeriod(id) {
         ).value;
 
 
+    const message =
+        document.getElementById(
+            "message-" + id
+        );
+
+
+    if (!time || !subject) {
+
+        message.className =
+            "message error";
+
+        message.textContent =
+            "Time and subject are required.";
+
+        return;
+
+    }
+
+
     db.collection("periods")
         .doc(id)
         .update({
@@ -544,27 +923,162 @@ function savePeriod(id) {
 
         .then(function() {
 
-            document.getElementById(
-                "message-" + id
-            ).textContent =
+            message.className =
+                "message success";
+
+            message.textContent =
                 "✓ Saved successfully";
 
+
+            setTimeout(function() {
+
+                message.textContent = "";
+
+            }, 2500);
 
         })
 
         .catch(function(error) {
 
-            console.error(error);
+            console.error(
+                "Save error:",
+                error
+            );
 
-            document.getElementById(
-                "message-" + id
-            ).textContent =
-                "Save failed.";
+
+            message.className =
+                "message error";
+
+            message.textContent =
+                "Save failed: " +
+                error.code;
 
         });
 
 }
 
+
+
+/* =========================================
+   ADD PERIOD
+========================================= */
+
+function addPeriod() {
+
+    db.collection("periods")
+        .get()
+        .then(function(snapshot) {
+
+            let highestPeriod = 0;
+
+
+            snapshot.forEach(function(doc) {
+
+                const number =
+                    Number(
+                        doc.data().periodNo
+                    );
+
+
+                if (
+                    number > highestPeriod
+                ) {
+
+                    highestPeriod =
+                        number;
+
+                }
+
+            });
+
+
+            const newPeriod =
+                highestPeriod + 1;
+
+
+            db.collection("periods")
+                .add({
+
+                    periodNo:
+                        newPeriod,
+
+                    time:
+                        "00:00-00:00",
+
+                    subject:
+                        "NEW SUBJECT",
+
+                    status:
+                        "upcoming"
+
+                });
+
+        })
+
+        .catch(function(error) {
+
+            console.error(
+                "Add period error:",
+                error
+            );
+
+            alert(
+                "Could not add period: " +
+                error.code
+            );
+
+        });
+
+}
+
+
+
+/* =========================================
+   DELETE PERIOD
+========================================= */
+
+function deletePeriod(id) {
+
+    const confirmDelete =
+        confirm(
+            "Are you sure you want to delete this period?"
+        );
+
+
+    if (!confirmDelete) {
+
+        return;
+
+    }
+
+
+    db.collection("periods")
+        .doc(id)
+        .delete()
+
+        .then(function() {
+
+            console.log(
+                "Period deleted"
+            );
+
+        })
+
+        .catch(function(error) {
+
+            console.error(
+                "Delete error:",
+                error
+            );
+
+            alert(
+                "Delete failed: " +
+                error.code
+            );
+
+        });
+
+}
 
 </script>
 
